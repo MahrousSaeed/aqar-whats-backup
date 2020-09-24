@@ -1,0 +1,105 @@
+<div class="row">
+
+    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 grid-margin stretch-card">
+        <div class="card card-statistics">
+            <div class="card-body">
+                <div class="clearfix">
+                    <div class="float-left">
+                            <i class="fas fa-users icon-lg text-success" ></i>
+                    </div>
+                    <div class="float-right">
+                        <p class="mb-0 text-right">إجمالى المستخدمين</p>
+                        <div class="fluid-container">
+                            <h3 class="font-weight-medium text-right mb-0">
+                                <span class="en-font"> {{users?.length}} </span>
+                            </h3>
+                        </div>
+                    </div>
+                </div>
+                <p class="text-muted mt-3 mb-0">
+                    <i class="mdi mdi-alert-octagon mr-1" aria-hidden="true"></i> المستخدمين
+                    <strong class="en-font">{{ currentDate | amDateFormat:'MMMM YYYY' }}</strong>
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 grid-margin stretch-card">
+            <div class="card card-statistics">
+                <div class="card-body">
+                    <div class="clearfix">
+                        <div class="float-left">
+                            <!-- <i class="mdi mdi-cash icon-lg" style="color:#2f7acf"></i> -->
+                            <!-- <i class="fas fa-building text-danger icon-lg"></i> -->
+                            <i class="fas fa-city text-primary icon-lg"></i>
+
+
+
+                        </div>
+                        <div class="float-right">
+                            <p class="mb-0 text-right">إجمالى الاعلانات</p>
+                            <div class="fluid-container">
+                                <h3 class="font-weight-medium text-right mb-0">
+                                    <span class="en-font"> {{properties?.length}}</span>
+                                </h3>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-muted mt-3 mb-0">
+                        <i class="mdi mdi-alert-octagon mr-1" aria-hidden="true"></i> اجمالي الاعلانات
+                        <strong class="en-font">{{ currentDate | amDateFormat:'MMMM YYYY' }}</strong>
+                    </p>
+                </div>
+            </div>
+        </div>
+    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 grid-margin stretch-card">
+        <div class="card card-statistics">
+            <div class="card-body">
+                <div class="clearfix">
+                    <div class="float-left">
+                        <!-- <i class="mdi mdi-poll-box text-success icon-lg"></i> -->
+                        <i class="fas fa-building text-success icon-lg"></i>
+                    </div>
+                    <div class="float-right">
+                        <p class="mb-0 text-right">اجمالي الطلبات العقارية</p>
+                        <div class="fluid-container">
+                            <h3 class="font-weight-medium text-right mb-0">
+                                <span
+                                    class="en-font">  {{orders?.length}} </span>
+                            </h3>
+                        </div>
+                    </div>
+                </div>
+                <p class="text-muted mt-3 mb-0">
+                    <i class="mdi mdi-calendar mr-1" aria-hidden="true"></i> اجمالي الطلبات 
+                    <strong class="en-font">{{ currentDate | amDateFormat:'MMMM YYYY' }}</strong>
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 grid-margin stretch-card">
+            <div class="card card-statistics">
+                <div class="card-body">
+                    <div class="clearfix">
+                        <div class="float-left">
+                            <!-- <i class="mdi mdi-cash icon-lg" style="color:#2f7acf"></i> -->
+                            <i class="fas fa-users icon-lg" style="color:#2f7acf"></i>
+                        </div>
+                        <div class="float-right">
+                            <p class="mb-0 text-right">إجمالى الجروبات</p>
+                            <div class="fluid-container">
+                                <h3 class="font-weight-medium text-right mb-0">
+                                    <span class="en-font">{{threads?.length}} </span>
+                                    
+                                </h3>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-muted mt-3 mb-0">
+                        <i class="mdi mdi-alert-octagon mr-1" aria-hidden="true"></i> 
+                        <strong class="en-font">{{ currentDate | amDateFormat:'MMMM YYYY' }}</strong>
+                    </p>
+                </div>
+            </div>
+        </div>
+</div>
+

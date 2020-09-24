@@ -1,0 +1,111 @@
+<div class="card mb-50">
+    <div class="card-body">
+        <div class="container">
+            <h4 class="mb-35">
+                <strong>إضافة أدمن جديد</strong>
+            </h4>
+            <form #form="ngForm" role="form" autocomplete="off" (ngSubmit)="submitForm()">
+                <div class="row">
+                    <div class="col-6">
+                        <div class="form-group" [class.error]="name.invalid && (name.dirty || name.touched)">
+                            <label for="name">الإسم</label>
+                            <input type="text" class="form-control" [(ngModel)]="addModel.name" #name="ngModel"
+                                name="name" placeholder="الإسم"
+                                pattern="[A-Za-z\u0600-\u06FF][\u0600-\u06FF A-Za-z0-9]*" required>
+                            <span class="error-label">هذا الحقل مطلوب, و لا يمكن أن يبدأ برقم</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="form-group" [class.error]="email.invalid && (email.dirty || email.touched)">
+                            <label for="email">الايميل</label>
+
+                            <input type="text" class="form-control" [disabled]="editId" [(ngModel)]="addModel.email" id="email_input"
+                                #email="ngModel" name="email" pattern="^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$"
+                                required placeholder="الايميل">
+                            <span class="error-label">هذا الحقل مطلوب</span>
+                        </div>
+
+                    </div>
+                    <div class="col-6">
+                        <div class="form-group"
+                            [class.error]="password.invalid && (password.dirty || password.touched)">
+                            <label for="password">الرقم السري </label>
+
+                            <input type="text" class="form-control" [(ngModel)]="addModel.password" id="passwordd"
+                                #password="ngModel" name="password" placeholder="الرقم السري ">
+                            <span class="error-label">هذا الحقل مطلوب</span>
+                        </div>
+                    </div>
+                    <div class="col-12 mt-30">
+                        <button *ngIf="!editId" 
+                            class="btn btn-primary" type="submit" [disabled]="form.invalid">
+                            إضافة أدمن
+                        </button>
+                        <button *ngIf="editId" class="btn btn-primary" type="submit" [disabled]="form.invalid">
+                            حفظ التعديل
+                        </button>
+                        <button class="btn btn-default mr-10" type="button" (click)="form.reset();cancel()">مسح
+                            النموذج</button>
+                        <button *ngIf="editId" class="btn btn-default mr-10 float-left" type="button"
+                            (click)="cancel()">إلغاء التعديل</button>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="row mb-35">
+            <div class="col-6 mx-auto">
+                <input type="text" class="form-control search" [(ngModel)]="filter" (keyup)="filterData()"
+                    placeholder="بحث بالاسم ">
+            </div>
+           
+        </div>
+
+        <ngx-datatable [rows]="dataFiltered" [limit]="10">
+            <ngx-datatable-column name="الإسم">
+                <ng-template let-row="row" ngx-datatable-cell-template>{{ row.name }}</ng-template>
+            </ngx-datatable-column>
+            <ngx-datatable-column name="البريد الالكتروني">
+                <ng-template let-row="row" ngx-datatable-cell-template>{{ row.email }}</ng-template>
+            </ngx-datatable-column>
+            <ngx-datatable-column name="الرقم السري ">
+                <ng-template let-row="row" ngx-datatable-cell-template>{{ row.password }}</ng-template>
+            </ngx-datatable-column>
+
+            <ngx-datatable-column name="إدارة">
+                <ng-template let-row="row" ngx-datatable-cell-template>
+                    <button class="btn btn-danger mr-5" tooltip="حذف" 
+                        (click)="deleteModal.show(); deleteId = row.id">
+                        حذف
+                    </button>
+                    <button class="btn btn-primary mr-5" tooltip="تعديل"
+                        (click)="edit(row.id)">
+                        تعديل
+                    </button>
+                </ng-template>
+            </ngx-datatable-column>
+        </ngx-datatable>
+    </div>
+</div>
+
+<div bsModal #deleteModal="bs-modal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-body">
+                <h5 class="mb-25">لا يمكنك التراجع عن الحذف, تأكيد؟</h5>
+
+                <button type="button" class="btn btn-default ml-10" (click)="deleteModal.hide(); deleteId = null">
+                    إلغاء
+                </button>
+                <button type="button" class="btn btn-danger" (click)="deleteModal.hide(); delete()">
+                    تأكيد الحذف
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

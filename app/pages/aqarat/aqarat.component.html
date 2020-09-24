@@ -1,0 +1,491 @@
+<div class="card">
+    <div class="card-body">
+        <div class="row mb-35">
+
+            <div class="col-12 col-md-6">
+                <input type="text" class="form-control search" [(ngModel)]="filter" (keyup)="filterData()"
+                    placeholder="بحث بكلمات مفتاحية">
+            </div>
+
+            <div class="col-12 col-md-6">
+                <select class="form-control" [(ngModel)]="sort" (change)="filterData()">
+                    <option value="1">ترتيب الأحدث للأقدم</option>
+                    <option value="2">ترتيب الأقدم للأحدث</option>
+                </select>
+            </div>
+        </div>
+
+        <ngx-datatable [rows]="dataFiltered" [limit]="10" [footerHeight]="50">
+
+            <ngx-datatable-column name="اسم العقار" prop="name">
+                <ng-template let-row="row" ngx-datatable-cell-template>{{ row.title }}</ng-template>
+            </ngx-datatable-column>
+            <ngx-datatable-column name="نوع العقار" prop="name">
+                <ng-template let-row="row" ngx-datatable-cell-template>{{ row.propertyTypeTitleAr }}</ng-template>
+            </ngx-datatable-column>
+            <ngx-datatable-column name="المساحة" prop="name">
+                <ng-template let-row="row" ngx-datatable-cell-template>{{ row.area }}</ng-template>
+            </ngx-datatable-column>
+            <ngx-datatable-column name="المستخدم" prop="name">
+                <ng-template let-row="row" ngx-datatable-cell-template>{{ row.userName }}</ng-template>
+            </ngx-datatable-column>
+            <ngx-datatable-column name="تليفون" prop="name">
+                <ng-template let-row="row" ngx-datatable-cell-template>
+                        <a [href]="'tel:' + row.userPhone" class="en-font">{{ row.userPhone }}</a>
+                </ng-template>
+            </ngx-datatable-column>
+            <ngx-datatable-column name="إدارة" width="">
+                <ng-template let-row="row" ngx-datatable-cell-template>
+                    <button class="btn btn-danger mr-5" tooltip="حذف" (click)="deleteModal.show(); deleteId = row.id">
+                        حذف
+                    </button>
+                    <button class="btn btn-primary mr-5" tooltip="تعديل" (click)="edit(row)">
+                        تعديل
+                    </button>
+                    <button class="btn btn-success mr-5" tooltip="تفاصيل" (click)="show_details(row.id)">
+                        تفاصيل
+                    </button>
+                </ng-template>
+            </ngx-datatable-column>
+        </ngx-datatable>
+    </div>
+</div>
+
+<div bsModal #deleteModal="bs-modal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-body">
+                <h5 class="mb-25">لا يمكنك التراجع عن الحذف, تأكيد؟</h5>
+
+                <button type="button" class="btn btn-default ml-10" (click)="deleteModal.hide(); deleteId = null">
+                    إلغاء
+                </button>
+                <button type="button" class="btn btn-danger" (click)="deleteModal.hide(); delete()">
+                    تأكيد الحذف
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div bsModal #detailsModel="bs-modal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-body">
+                <h5 class="mb-25">تفاصيل العقار </h5>
+                <ul class="bill_data" *ngIf="property">
+                    <li>
+                        <span class="bill_title">  اسم العقار </span>
+                        <span class="bill_value">{{property[0]?.title}}</span>
+                    </li>
+                    <li>
+                        <span class="bill_title">  نوع العقار </span>
+                        <span class="bill_value">{{property[0]?.propertyTypeTitleAr}}</span>
+                    </li>
+                    <li>
+                        <span class="bill_title">   العنوان </span>
+                        <span class="bill_value">{{property[0]?.address}}</span>
+                    </li>
+                    <li>
+                        <span class="bill_title"> المدينة</span>
+                        <span class="bill_value">{{property[0]?.city}}</span>
+                    </li>
+                    <li>
+                        <span class="bill_title"> الحي</span>
+                        <span class="bill_value">{{property[0]?.townAr}}</span>
+                    </li>
+                    <li>
+                        <span class="bill_title"> السعر</span>
+                        <span class="bill_value">{{property[0]?.price}}</span>
+                    </li>
+                    <li>
+                        <span class="bill_title"> المساحة</span>
+                        <span class="bill_value">{{property[0]?.area}}</span>
+                    </li>
+                    <li>
+                        <span class="bill_title"> حدود البيع</span>
+                        <span class="bill_value">{{property[0]?.limitsTitle}}</span>
+                    </li>
+                    <li>
+                        <span class="bill_title"> الواجهات</span>
+                        <span class="bill_value">
+                            <span *ngIf="property[0]?.interfaceTitle != null" >{{property[0]?.interfaceTitle}}</span>
+                            <span *ngIf="property[0]?.interface2Title != null" >{{property[0]?.interface2Title}}</span>
+                            <span *ngIf="property[0]?.interface3Title != null" >{{property[0]?.interface3Title}}</span>
+                            <span *ngIf="property[0]?.interface4Title != null" >{{property[0]?.interface4Title}}</span>
+                        </span>
+                    </li>
+                    <li *ngIf=" property[0]?.propertyTypeTitleEn == 'Building' || property[0]?.propertyTypeTitleEn == 'Commercial'">
+                        <span class="bill_title"> عدد الطوابق</span>
+                        <span class="bill_value">{{property[0]?.levelsCount}}</span>
+                    </li>
+
+                    <li>
+                        <span class="bill_title"> العميل </span>
+                        <span class="bill_value">{{property[0]?.userName}}</span>
+                    </li>
+                    <li>
+                        <span class="bill_title"> تليفون العميبل </span>
+                        <span class="bill_value">
+                                <a [href]="'tel:' + property[0]?.userPhone" class="en-font">{{ property[0]?.userPhone }}</a>
+                            </span>
+                    </li>
+                    <li>
+                        <span class="bill_title"> صفة العميل</span>
+                        <span class="bill_value">{{property[0]?.userTypeTitle}}</span>
+                    </li>
+                    <li>
+                        <span class="bill_title"> نوع العملية</span>
+                        <span class="bill_value">
+                           <span *ngIf="property[0]?.isRent == 0 ">إيجار</span>
+                           <span *ngIf="property[0]?.isRent == 1 ">بيع</span>
+                           <span *ngIf="property[0]?.isRent == 2 ">مقايضه</span>
+                        </span>
+                    </li>
+                    <li>
+                        <span class="bill_title">الحالة</span>
+                        <span class="bill_value">{{property[0]?.statusTitleAr}}</span>
+                    </li>
+                    <li>
+                        <span class="bill_title">مفروشه</span>
+                        <span class="bill_value">
+                            {{property[0]?.isFurnished == false? 'لا': 'نعم'}}
+                        </span>
+                    </li>
+                    <li>
+                        <span class="bill_title">مفعل ؟</span>
+                        <span class="bill_value">
+                            {{property[0]?.isActive == false? 'لا': 'نعم'}}
+                        </span>
+                    </li>
+
+                    <li
+                        *ngIf=" property[0]?.propertyTypeTitleEn == 'Apartment' || property[0]?.propertyTypeTitleEn == 'Villa'">
+                        <span class="bill_title">حمام</span>
+                        <span class="bill_value">{{property[0]?.bathroomsCount}}</span>
+                    </li>
+                    <li
+                        *ngIf=" property[0]?.propertyTypeTitleEn == 'Apartment' || property[0]?.propertyTypeTitleEn == 'Villa'">
+                        <span class="bill_title">غرف النوم</span>
+                        <span class="bill_value">{{property[0]?.bedroomsCount}}</span>
+                    </li>
+
+                    <li>
+                        <span class="bill_title">الوصف</span>
+                        <span class="bill_value">{{property[0]?.description}}</span>
+                    </li>
+                    <li>
+                        <span class="service_title">الصور </span>
+                        <div class="row">
+                            <div class="col-6 aqar_images" *ngFor="let img of property[0]?.images "
+                                [ngStyle]="{'background-image': 'url(' + img + ')'}">
+                                <!-- <img  [src]="img" alt=""> -->
+                            </div>
+                        </div>
+                    </li>
+
+
+                </ul>
+                <div class="col-12">
+                    <!-- <input type="text" class="form-control" [(ngModel)]="addModel.search" #search="ngModel"
+                            id="search" name="search" placeholder="search" min="0" pattern="[0-9]*\.?[0-9]*" required> -->
+                    <agm-map [latitude]="lat" [longitude]="lng" [zoom]="10">
+                        <agm-marker [latitude]="latitude" [longitude]="longitude" 
+                          ></agm-marker>
+                      </agm-map>
+
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+<div bsModal #updateModal="bs-modal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-body">
+                <h5 class="mb-25">تعديل  الاعلان</h5>
+                <form #form="ngForm" role="form" autocomplete="off" (ngSubmit)="update()">
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label for="title">title</label>
+                                <textarea class="form-control" [(ngModel)]="addModel.title" id="title" name="title"
+                                    placeholder="title"></textarea>
+                                <span class="error-label">هذا الحقل مطلوب</span>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="form-group" *ngIf="types">
+                                <label for="">نوع العقار</label>
+                                <select-dropdown [items]="types" [(ngModel)]="addModel.propertyTypeId"
+                                    #property_type="ngModel" controlId="property_type" name="property_type"
+                                    (changed)="onSelecttype($event)" placeholder="يرجى إختيار النوع">
+                                </select-dropdown>
+                            </div>
+                        </div>
+
+                        <div class="col-4"
+                            *ngIf="addModel.propertyTypeTitleEn == 'Building' || addModel.propertyTypeTitleEn == 'Commercial'">
+                            <div class="form-group"
+                                [class.error]="levelsCount.invalid && (levelsCount.dirty || levelsCount.touched)">
+                                <label for="levelsCount">عدد الطوابق</label>
+                                <input type="number" class="form-control" [(ngModel)]="addModel.levelsCount"
+                                    #levelsCount="ngModel" id="levelsCount" name="levelsCount" placeholder="عدد الطوابق"
+                                    min="0" pattern="[0-9]+" required>
+                                <span class="error-label">هذا الحقل مطلوب</span>
+                            </div>
+                        </div>
+                        <div class="col-4" *ngIf="addModel.propertyTypeTitleEn == 'Building'">
+                            <div class="form-group"
+                                [class.error]="apartmentsCount.invalid && (apartmentsCount.dirty || apartmentsCount.touched)">
+                                <label for="apartmentsCount">عدد الشقق</label>
+                                <input type="number" class="form-control" [(ngModel)]="addModel.apartmentsCount"
+                                    #apartmentsCount="ngModel" id="apartmentsCount" name="apartmentsCount"
+                                    placeholder="عدد الشقق" min="0" pattern="[0-9]+" required>
+                                <span class="error-label">هذا الحقل مطلوب</span>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="form-group" [class.error]="area.invalid && (area.dirty || area.touched)">
+                                <label for="area">المساحة</label>
+                                <input type="number" class="form-control" [(ngModel)]="addModel.area" #area="ngModel"
+                                    id="area" name="area" placeholder="المساحة" min="0" pattern="[0-9]+" required>
+                                <span class="error-label">هذا الحقل مطلوب</span>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="form-group"
+                                [class.error]="address.invalid && (address.dirty || address.touched)">
+                                <label for="address">العنوان</label>
+                                <input type="text" class="form-control" [(ngModel)]="addModel.address"
+                                    #address="ngModel" id="address" name="address" placeholder="العنوان" required>
+                                <span class="error-label">هذا الحقل مطلوب</span>
+                            </div>
+                        </div>
+                        <div class="col-4" *ngIf="addModel.propertyTypeTitleEn == 'Building'">
+                            <div class="form-group"
+                                [class.error]="commercialCount.invalid && (commercialCount.dirty || commercialCount.touched)">
+                                <label for="commercialCount">عدد المحلات</label>
+                                <input type="number" class="form-control" [(ngModel)]="addModel.commercialCount"
+                                    #commercialCount="ngModel" id="commercialCount" name="commercialCount"
+                                    placeholder="عدد المحلات" min="0" pattern="[0-9]+" required>
+                                <span class="error-label">هذا الحقل مطلوب</span>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="form-group" [class.error]="price.invalid && (price.dirty || price.touched)">
+                                <label for="price">السعر</label>
+                                <input type="number" class="form-control" [(ngModel)]="addModel.price" #price="ngModel"
+                                    id="price" name="price" placeholder="السعر" min="0" pattern="[0-9]+" required>
+                                <span class="error-label">هذا الحقل مطلوب</span>
+                            </div>
+                        </div>
+                        <div class="col-4"
+                            *ngIf="addModel.propertyTypeTitleEn == 'Villa' ||addModel.propertyTypeTitleEn == 'Apartment' ">
+                            <div class="form-group"
+                                [class.error]="bathroomsCount.invalid && (bathroomsCount.dirty || bathroomsCount.touched)">
+                                <label for="bathroomsCount">حمام</label>
+                                <input type="number" class="form-control" [(ngModel)]="addModel.bathroomsCount"
+                                    #bathroomsCount="ngModel" id="bathroomsCount" name="bathroomsCount"
+                                    placeholder="حمام" min="0" pattern="[0-9]+" required>
+                                <span class="error-label">هذا الحقل مطلوب</span>
+                            </div>
+                        </div>
+                        <div class="col-4"
+                            *ngIf="addModel.propertyTypeTitleEn == 'Villa' ||addModel.propertyTypeTitleEn == 'Apartment' ">
+                            <div class="form-group"
+                                [class.error]="bedroomsCount.invalid && (bedroomsCount.dirty || bedroomsCount.touched)">
+                                <label for="bedroomsCount">غرف النوم</label>
+                                <input type="number" class="form-control" [(ngModel)]="addModel.bedroomsCount"
+                                    #bedroomsCount="ngModel" id="bedroomsCount" name="bedroomsCount"
+                                    placeholder="غرف النوم" min="0" pattern="[0-9]+" required>
+                                <span class="error-label">هذا الحقل مطلوب</span>
+                            </div>
+                        </div>
+                        <div class="col-4"
+                            *ngIf="addModel.propertyTypeTitleEn == 'Apartment' || addModel.propertyTypeTitleEn == 'Commercial'">
+                            <div class="form-group" [class.error]="floor.invalid && (floor.dirty || floor.touched)">
+                                <label for="floor">رقم الدور</label>
+                                <input type="number" class="form-control" [(ngModel)]="addModel.floor" #floor="ngModel"
+                                    id="floor" name="floor" placeholder="رقم الدور" min="0" pattern="[0-9]+" required>
+                                <span class="error-label">هذا الحقل مطلوب</span>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label for="">حدود البيع</label>
+                                <select-dropdown [items]="limits" [(ngModel)]="addModel.limitsTypeId" #limit="ngModel"
+                                    controlId="limit" name="limit" (changed)="onSelectLimit($event)"
+                                    placeholder="يرجى إختيار العدد">
+                                </select-dropdown>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label for="">الشوارع المحيطه</label>
+                                <select-dropdown [items]="streats" [(ngModel)]="addModel.streats" #street="ngModel"
+                                    controlId="street" name="street" (changed)="onSelectStreat($event)"
+                                    placeholder="يرجى إختيار العدد">
+                                </select-dropdown>
+                                <span *ngIf="addModel.interface4TypeId ">الوجهات من الاربع جهات</span>
+
+                            </div>
+                        </div>
+                        <div class="col-4" *ngIf="!addModel.interface4TypeId ">
+                            <div class="form-group">
+                                <label for=""> الجهه الاولي</label>
+                                <select-dropdown [items]="interfaces" [(ngModel)]="addModel.interfaceTypeId"
+                                    #interface="ngModel" controlId="interface" name="interface"
+                                    (changed)="onSelectInterface($event)" placeholder="يرجى إختيار العدد">
+                                </select-dropdown>
+                            </div>
+                        </div>
+                        <div class="col-4"
+                            *ngIf="(addModel.streats == 2 || addModel.streats == 3)&& !addModel.interface4TypeId">
+                            <div class="form-group">
+                                <label for=""> الجهه الثانية</label>
+                                <select-dropdown [items]="interfaces" [(ngModel)]="addModel.interface2TypeId"
+                                    #interface2="ngModel" controlId="interface2" name="interface2"
+                                    (changed)="onSelectInterface2($event)" placeholder="يرجى إختيار العدد">
+                                </select-dropdown>
+                            </div>
+                        </div>
+                        <div class="col-4" *ngIf="addModel.streats == 3 && !addModel.interface4TypeId">
+                            <div class="form-group">
+                                <label for=""> الجهه الثالثه</label>
+                                <select-dropdown [items]="interfaces" [(ngModel)]="addModel.interface3TypeId"
+                                    #interface3="ngModel" controlId="interface3" name="interface3"
+                                    (changed)="onSelectInterface3($event)" placeholder="يرجى إختيار العدد">
+                                </select-dropdown>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label for="">حالة العقار</label>
+                                <select-dropdown [items]="_status" [(ngModel)]="addModel.statusTypeId" #status="ngModel"
+                                    controlId="status" name="status" (changed)="onSelectStatus($event)"
+                                    placeholder="يرجى إختيار الحالة">
+                                </select-dropdown>
+                            </div>
+                        </div>
+                        <div class="col-4" *ngIf="addModel.statusTypeId == 'old'">
+                            <div class="form-group" [class.error]="age.invalid && (age.dirty || age.touched)">
+                                <label for="age">عمر العقار</label>
+                                <input type="text" class="form-control" [(ngModel)]="addModel.age" #age="ngModel"
+                                    id="age" name="age" placeholder="age" min="0" pattern="[0-9]*\.?[0-9]*" required>
+                                <span class="error-label">هذا الحقل مطلوب</span>
+                            </div>
+                        </div>
+
+
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label for="description">الوصف</label>
+                                <textarea class="form-control" [(ngModel)]="addModel.description" id="description"
+                                    name="description" placeholder="الوصف"></textarea>
+                                <span class="error-label">هذا الحقل مطلوب</span>
+                            </div>
+                        </div>
+
+                        <div class="col-4">
+                            <div class="form-group" *ngIf="payments">
+                                <label for="">طريقة الدفع</label>
+                                <select-dropdown [items]="payments" [(ngModel)]="addModel.paymentTypeId"
+                                    #payment="ngModel" controlId="payment" name="payment"
+                                    (changed)="onSelectpayment($event)" placeholder="يرجى إختيار الطريقة">
+                                </select-dropdown>
+                            </div> 
+                        </div>
+                        <div class="col-4">
+                            <div class="form-group" *ngIf="cities">
+                                <label for="">المدينة</label>
+                                <select-dropdown [items]="cities" [(ngModel)]="addModel.cityId" #city="ngModel"
+                                    controlId="city" name="city" (changed)="onSelectCity($event)"
+                                    placeholder="يرجى إختيار المدينة">
+                                </select-dropdown>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="form-group" *ngIf="towns">
+                                <label for="">الحي</label>
+                                <select-dropdown [items]="towns" [(ngModel)]="addModel.townId" #town="ngModel"
+                                    controlId="town" name="town" (changed)="onSelectTown($event)"
+                                    placeholder="يرجى إختيار الحي">
+                                </select-dropdown>
+                            </div>
+                        </div>
+
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label for="isFurnished">نوع العمليه</label>
+                                <select-dropdown [items]="operations" [(ngModel)]="addModel.isRent" #operation="ngModel"
+                                    controlId="operation" name="operation" (changed)="onSelectOperation($event)"
+                                    placeholder="يرجى إختيار الدولة">
+                                </select-dropdown>
+                            </div>
+                        </div>
+                        <div class="form-group col-8">
+                            <input type="file" id="file" style="display: none;" #userPhoto
+                                (change)="onFileSelected($event)" name="image" autocomplete="off" multiple />
+                            <div class="aqar_images_container">
+                                <button class="btn btn-primary ml-20" type="button" (click)="userPhoto.click()">تحميل
+                                    صور </button>
+
+                                <div *ngFor="let img of images" [ngStyle]="{'background-image':'url(' + img + ')'}">
+                                    <span><i class="fas fa-times" (click)="delete_image(img)"></i> </span>
+                                </div>
+                            </div>
+                            <div *ngIf="loadingUpload == true">جاري رفع الصور برجاء الانتظار </div>
+                            <div class="lds-ring" *ngIf="loadingUpload == true">
+                                <div></div>
+                                <div></div>
+                                <div></div>
+                                <div></div>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="form-group">
+                                <label for="isAdmin">مفعل؟</label>
+                                <input type="checkbox" [(ngModel)]="addModel.isActive" id="isActive" name="isActive">
+                            </div>
+                        </div>
+                        <div class="col-2"
+                            *ngIf="addModel.propertyTypeTitleEn == 'Apartment' || addModel.propertyTypeTitleEn == 'Commercial' || addModel.propertyTypeTitleEn == 'Villa'">
+                            <div class="form-group">
+                                <label for="isFurnished">مفروشه</label>
+                                <input type="checkbox" [(ngModel)]="addModel.isFurnished" id="isFurnished"
+                                    name="isFurnished">
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <!-- <input type="text" class="form-control" [(ngModel)]="addModel.search" #search="ngModel"
+                                    id="search" name="search" placeholder="search" min="0" pattern="[0-9]*\.?[0-9]*" required> -->
+                            <agm-map [latitude]="lat" [longitude]="lng" [zoom]="10">
+                                <agm-marker [latitude]="latitude" [longitude]="longitude" [markerDraggable]="true"
+                                  (dragEnd)="markerDragEnd($event)"></agm-marker>
+                              </agm-map>
+                            
+                              <h5>Address: {{address}}</h5>
+                              <div>Latitude: {{latitude}}</div>
+                              <div>Longitude: {{longitude}}</div>
+
+
+                        </div>
+
+                        <div class="col-12 mt-30">
+                            <button class="btn btn-primary" type="submit" [disabled]="form.invalid">
+                                تعديل
+                            </button>
+                            <button class="btn btn-default mr-10" type="button" (click)="form.reset()">مسح
+                                النموذج</button>
+
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

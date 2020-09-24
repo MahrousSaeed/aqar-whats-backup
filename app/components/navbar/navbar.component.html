@@ -1,0 +1,91 @@
+<nav class="navbar default-layout col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
+	<div class="text-center navbar-brand-wrapper d-flex align-items-top justify-content-center"
+		[class.active]="currentUrl == '/dash/dashboard' || currentUrl == '/dash/admindb'">
+		<a class="navbar-brand brand-logo" (click)="checkDoctor()" style="cursor:pointer"
+			>
+			<!-- <img src="assets/images/logo.svg" alt="logo" /> -->
+			<h4 class="mt-15">
+				<i class="icon ion-md-home ml-10"></i>
+				<strong>عقار
+					<span class="op-60">واتس</span>
+				</strong>
+			</h4>
+			<!-- <span style="position:absolute; bottom:10px; right:54px; line-height:1;" class="ts-10 op-70">v{{ appVer }}</span> -->
+		</a>
+		<a class="navbar-brand brand-logo-mini" (click)="checkDoctor()" style="cursor:pointer">
+			<!-- <img src="assets/images/logo-mini.svg" alt="logo" /> -->
+			<h4 class="mt-15">
+				<i class="icon ion-md-home"></i>
+			</h4>
+		</a>
+	</div>
+	<div class="navbar-menu-wrapper d-flex align-items-center">
+		<ul class="navbar-nav header-links flex-1 justify-content-center">
+			<ng-template ngFor let-item [ngForOf]="menuItems">
+				<!-- item.canShow&& -->
+				<li *ngIf="item.children === undefined && (item.data?.inMenu === undefined || item.data?.inMenu) && (item.data.hide === undefined || !item.data.hide)"
+					class="nav-item">
+					<a class="nav-link header-links-item" [routerLink]="item.path"
+						[class.active]="currentUrl == '/dash/' + item.path">
+						<i *ngIf="item.data.icon" [class]="item.data.icon + ' ml-7'"></i>
+						<strong>{{ item.data.title }}</strong>
+					</a>
+				</li>
+				<!-- item.canShow && -->
+				<li *ngIf="(item.data.inMenu === undefined || item.data.inMenu) && (item.data.hide === undefined || !item.data.hide) && item.children"
+					class="nav-item" ngbDropdown >
+					<a class="nav-link dropdown-toggle" ngbDropdownToggle
+						[class.active]="currentUrl == '/dash/' + item.path">
+						<i *ngIf="item.data.icon" [class]="item.data.icon + ' ml-7'"></i>
+						<strong>{{ item.data.title }}</strong>
+					</a>
+
+					<div class="dropdown-menu dropdown-menu-right navbar-dropdown" ngbDropdownMenu>
+						<ng-template ngFor let-child [ngForOf]="item.children">
+							<a *ngIf="child.data.roles.includes(globals.currentUser.role)"  class="dropdown-item" [routerLink]="child.path"
+								[class.active]="currentUrl == '/dash/' + child.path">
+								{{ child.data.title }}
+							</a>
+						</ng-template>
+					</div>
+				</li>
+			</ng-template>
+
+		</ul>
+
+		<ul class="navbar-nav navbar-nav-right" >
+			<li class="nav-item dropdown d-none d-xl-inline-block" ngbDropdown >
+				<a class="nav-link dropdown-toggle not" id="UserDropdown" ngbDropdownToggle>
+					<span class="profile-text ml-10">مرحبا,
+						<span
+							[class.en-font]="!globals.isArabic(globals.currentUser?.name)">{{ globals.currentUser?.name }}</span>
+					</span>
+					<img id="yourPic" class="img-xs rounded-circle" src="assets/images/default_avatar.png"
+					 alt="Profile image">
+					<!-- <img id="yourPic" class="img-xs rounded-circle" [src]="globals.currentUser?.image"
+						onerror="this.src='assets/images/default_avatar.png'" alt="Profile image"> -->
+				
+				</a>
+				<div class="dropdown-menu dropdown-menu-right navbar-dropdown" ngbDropdownMenu>
+		
+					<a  class="dropdown-item mt-10"
+						(click)="openUpdateProfile()">
+						تعديل الملف الخاص
+					</a>
+					<!-- <a class="dropdown-item mt-2">
+						قفل النظام
+					</a> -->
+					<hr>
+					<a class="dropdown-item mt-2" (click)="logout()" style="cursor:pointer">
+						<i class="icon ion-md-log-out ml-5"></i> تسجيل الخروج
+					</a>
+				</div>
+			</li>
+		</ul>
+		<button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button"
+			(click)="toggleOffcanvas()">
+			<span class="mdi mdi-menu"></span>
+		</button>
+	</div>
+</nav>
+

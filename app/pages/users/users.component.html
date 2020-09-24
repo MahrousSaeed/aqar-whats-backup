@@ -1,0 +1,305 @@
+<div class="card">
+	<div class="card-body">
+		<div class="row mb-35">
+
+			<div class="col-12 col-md-6 mx-auto">
+				<input type="text" class="form-control search" [(ngModel)]="filter" (keyup)="filterData()"
+					placeholder="بحث بكلمات مفتاحية">
+			</div>
+
+			<!-- <div class="col-12 col-md-6">
+				<select class="form-control" [(ngModel)]="sort" (change)="filterData()">
+					<option value="1">ترتيب الأحدث للأقدم</option>
+					<option value="2">ترتيب الأقدم للأحدث</option>
+				</select>
+			</div> -->
+		</div>
+
+		<ngx-datatable [rows]="dataFiltered" [limit]="10" [footerHeight]="50">
+
+			<ngx-datatable-column name="الإسم بالعربية" prop="name" [maxWidth]="250">
+				<ng-template let-row="row" ngx-datatable-cell-template>{{ row.nickname }}</ng-template>
+			</ngx-datatable-column>
+			<ngx-datatable-column name="الوصف" prop="name" [maxWidth]="250">
+				<ng-template let-row="row" ngx-datatable-cell-template>{{ row.aboutMe }}</ng-template>
+			</ngx-datatable-column>
+			<!-- <ngx-datatable-column name="محظور شخصي" prop="name" [maxWidth]="80">
+				<ng-template let-row="row" ngx-datatable-cell-template>{{ row.blocked === true? 'نعم':'لا' }}
+				</ng-template>
+			</ngx-datatable-column> -->
+			<ngx-datatable-column name="رقم الجوال" prop="mobile" [maxWidth]="120">
+				<ng-template let-row="row" ngx-datatable-cell-template>
+					<a [href]="'tel:' + row.mobile" class="en-font">{{ row.phone }}</a>
+				</ng-template>
+			</ngx-datatable-column>
+			<ngx-datatable-column name="إدارة" width="">
+				<ng-template let-row="row" ngx-datatable-cell-template>
+					<button class="btn btn-primary mr-5" tooltip="تعديل" (click)="edit(row)">
+						تعديل
+					</button>
+					<button class="btn btn-primary mr-5" tooltip="تفاصيل" (click)="details(row)">
+						تفاصيل
+					</button>
+					<button *ngIf="row.appBlocked === false" class="btn btn-danger mr-5" tooltip="حظر "
+						(click)="blockModal.show();appBlockModel.type = 'app';blocked_userId = row.id">
+						حظر عام
+					</button>
+					<button *ngIf="row.blocked === false && row.appBlocked === false" class="btn btn-danger mr-5"
+						tooltip="حظر " (click)="blockModal.show();appBlockModel.type = 'user';blocked_userId = row.id">
+						حظر شخصي
+					</button>
+					<button *ngIf="row.appBlocked === true" class="btn btn-success mr-5" tooltip="حظر "
+						(click)="cancel_Modal.show();cancel_id = row.id">
+						الغاء الحظر العام
+					</button>
+					<button *ngIf="row.blocked === true" class="btn btn-success mr-5" tooltip="حظر "
+						(click)="cancel_user_Modal.show();cancel_id = row.id">
+						الغاء الحظر الشخصي
+					</button>
+					<!-- <span *ngIf="row.appBlocked === true" style="font-weight: bold;color:red;">محظور من التطبيق</span> -->
+
+				</ng-template>
+			</ngx-datatable-column>
+		</ngx-datatable>
+		<!-- pagination -->
+		<!-- <ngx-paginate *ngIf="globals.isOnline"
+			[page]="page" 
+			[options]="globals.options"  
+			(pageChange)='pageChange($event)'>
+		</ngx-paginate> -->
+	</div>
+</div>
+
+<div bsModal #blockModal="bs-modal" class="modal fade" tabindex="-1" role="dialog">
+	<div class="modal-dialog modal-md">
+		<div class="modal-content">
+			<div class="modal-body">
+				<h5 class="mb-25">حظر مستخدم من التطبيق</h5>
+				<form #blockForm="ngForm" role="form" autocomplete="off" (ngSubmit)="block()">
+					<div class="row">
+
+						<div class="col-6">
+							<div class="form-group"
+								[class.error]="start_at.invalid && (start_at.dirty || start_at.touched)">
+								<label for="start_at">تاريخ البداية</label>
+								<input type="text" class="form-control" [(ngModel)]="appBlockModel.start_at"
+									id="start_at" #start_at="ngModel" name="start_atd" placeholder="يرجى إختيار التاريخ"
+									bsDatepicker (onHidden)="handler()" [minDate]="currentDate" required>
+								<span class="error-label">هذا الحقل مطلوب</span>
+							</div>
+						</div>
+						<div class="col-6">
+							<div class="form-group" [class.error]="end_at.invalid && (end_at.dirty || end_at.touched)">
+								<label for="end_at">تاريخ النهاية</label>
+								<input type="text" class="form-control" [(ngModel)]="appBlockModel.end_at" id="end_at"
+									#end_at="ngModel" name="end_at" [minDate]="end_at_minDate"
+									placeholder="يرجى إختيار التاريخ" bsDatepicker required>
+								<span class="error-label">هذا الحقل مطلوب</span>
+							</div>
+						</div>
+						<div class="col-12">
+							<button type="button" class="btn btn-default ml-10"
+								(click)="blockModal.hide(); blocked_userId = null">
+								إلغاء
+							</button>
+							<button type="submit" class="btn btn-danger">
+								حظر
+							</button>
+						</div>
+					</div>
+				</form>
+
+			</div>
+		</div>
+	</div>
+</div>
+<div bsModal #detailsModel="bs-modal" class="modal fade" tabindex="-1" role="dialog">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-body">
+				<h5 class="mb-25 sup_title">اعلانات المستخدم</h5>
+				<div class="t_container">
+					<h5 class="notfound_message" *ngIf="!user_properties.length">لا يوجد اعلانات</h5>
+					<div *ngIf="user_properties.length ">
+						<ngx-datatable [rows]="user_properties" [limit]="10"  [footerHeight]="50">
+							<ngx-datatable-column name="اسم العقار" prop="name">
+								<ng-template let-row="row" ngx-datatable-cell-template>{{ row.title }}</ng-template>
+							</ngx-datatable-column>
+							<ngx-datatable-column name="نوع العقار" prop="name" [maxWidth]="100">
+								<ng-template let-row="row" ngx-datatable-cell-template>{{ row.propertyTypeTitleAr }}
+								</ng-template>
+							</ngx-datatable-column>
+							<ngx-datatable-column name="المساحة" prop="name" [maxWidth]="100">
+								<ng-template let-row="row" ngx-datatable-cell-template>{{ row.area }}</ng-template>
+							</ngx-datatable-column>
+							<ngx-datatable-column name="المستخدم" prop="name" [maxWidth]="150">
+								<ng-template let-row="row" ngx-datatable-cell-template>{{ row.userName }}</ng-template>
+							</ngx-datatable-column>
+							<ngx-datatable-column name="تليفون" prop="name" [maxWidth]="150">
+								<ng-template let-row="row" ngx-datatable-cell-template>
+										<a [href]="'tel:' + row.userPhone" class="en-font">{{ row.userPhone }}</a>
+									</ng-template>
+							</ngx-datatable-column>
+							<ngx-datatable-column name="الصور" prop="name" [maxWidth]="500">
+								<ng-template let-row="row" ngx-datatable-cell-template>
+									<img class="aqar_image_circle" *ngFor="let img of row.images" src="{{img}}" alt="">
+								</ng-template>
+							</ngx-datatable-column>
+
+						</ngx-datatable>
+					</div>
+				</div>
+				<h5 class="mb-25 sup_title">طلبات المستخدم</h5>
+				<div class="t_container">
+					<h5 class="notfound_message" *ngIf="!user_orders.length">لا يوجد طلبات للمستخدم</h5>
+					<div *ngIf="user_orders.length ">
+						<ngx-datatable [rows]="user_orders"  [limit]="10" [footerHeight]="50">
+
+							<ngx-datatable-column name="نوع العقار" prop="name" [maxWidth]="100">
+								<ng-template let-row="row" ngx-datatable-cell-template>{{ row.propertyTypeTitleAr }}
+								</ng-template>
+							</ngx-datatable-column>
+							<ngx-datatable-column name="المساحة" prop="name" [maxWidth]="100">
+								<ng-template let-row="row" ngx-datatable-cell-template>{{ row.area }}</ng-template>
+							</ngx-datatable-column>
+							<ngx-datatable-column name="السعر  " prop="price" [maxWidth]="200">
+								<ng-template let-row="row" ngx-datatable-cell-template>
+									<span *ngIf="row.priceFrom == null"> سعر السوق</span>
+									<span *ngIf="row.priceFrom != null"> من {{' ' +  row.priceFrom + ' ' }}
+										الي {{ ' ' + row.priceTo}}</span>
+
+								</ng-template>
+							</ngx-datatable-column>
+							<ngx-datatable-column name="تحتاج تموبل " prop="name" [maxWidth]="100">
+								<ng-template let-row="row" ngx-datatable-cell-template>
+									{{ row.hasFinance == true ? 'نعم':'لا' }}</ng-template>
+							</ngx-datatable-column>
+							<ngx-datatable-column name="نوع الطلب " prop="name" [maxWidth]="100">
+								<ng-template let-row="row" ngx-datatable-cell-template>
+									{{ row.isRent == true ? 'ايجار':'شراء' }}</ng-template>
+							</ngx-datatable-column>
+							<ngx-datatable-column name="المدن " prop="name" [maxWidth]="400">
+								<ng-template let-row="row" ngx-datatable-cell-template>
+									<ng-template #popTemplate>
+											<span *ngFor="let city of  row.cities">{{city.title_ar + ' - '}}</span>
+								
+									</ng-template>
+									<button type="button" class="btn btn-success" [popover]="popTemplate"
+										popoverTitle="جميع المدن ">
+										عرض المدن
+									</button>
+									
+								</ng-template>
+							</ngx-datatable-column>
+							<ngx-datatable-column name="المستخدم" prop="name">
+								<ng-template let-row="row" ngx-datatable-cell-template>{{ row.userName }}</ng-template>
+							</ngx-datatable-column>
+							<ngx-datatable-column name="تليفون" prop="name" [maxWidth]="150">
+								<ng-template let-row="row" ngx-datatable-cell-template> <a [href]="'tel:' + row.userPhone" class="en-font">{{ row.userPhone }}</a></ng-template>
+							</ngx-datatable-column>
+						</ngx-datatable>
+					</div>
+				</div>
+				<div *ngIf="appBlocked">
+					محظور من التطبيق
+					<strong> ( </strong>
+					<span> <strong> من </strong> {{appBlocked_startDate}} </span>
+					<span> <strong> الي </strong> {{appBlocked_endDate}} </span>
+					<strong> ) </strong>
+				</div>
+				<div *ngIf="blocked">
+					<span>محظور من الادمن</span>
+					<strong> ( </strong>
+					<span> <strong> من </strong> {{userBlocked_startDate}} </span>
+					<span> <strong> الي </strong> {{userBlocked_endDate}} </span>
+					<strong> ) </strong>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div bsModal #cancel_user_Modal="bs-modal" class="modal fade" tabindex="-1" role="dialog">
+	<div class="modal-dialog modal-sm">
+		<div class="modal-content">
+			<div class="modal-body">
+				<h5 class="mb-25">هل تريد إلغاء الحظر عن هذا المستخدم ؟ </h5>
+				<button type="button" class="btn btn-default ml-10" (click)="cancel_Modal.hide(); cancel_id = null">
+					إلغاء
+				</button>
+				<button type="button" class="btn btn-danger" (click)="cancel_user_Modal.hide(); cancelUserBlock()">
+					تأكيد الغاء الحظر
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div bsModal #cancel_Modal="bs-modal" class="modal fade" tabindex="-1" role="dialog">
+	<div class="modal-dialog modal-sm">
+		<div class="modal-content">
+			<div class="modal-body">
+				<h5 class="mb-25">هل تريد إلغاء الحظر عن هذا المستخدم ؟ </h5>
+
+				<button type="button" class="btn btn-default ml-10" (click)="cancel_Modal.hide(); cancel_id = null">
+					إلغاء
+				</button>
+				<button type="button" class="btn btn-danger" (click)="cancel_Modal.hide(); cancelBlock()">
+					تأكيد الغاء الحظر
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div bsModal #deleteModal="bs-modal" class="modal fade" tabindex="-1" role="dialog">
+	<div class="modal-dialog modal-sm">
+		<div class="modal-content">
+			<div class="modal-body">
+				<h5 class="mb-25">لا يمكنك التراجع عن الحذف, تأكيد؟</h5>
+
+				<button type="button" class="btn btn-default ml-10" (click)="deleteModal.hide();">
+					إلغاء
+				</button>
+				<button type="button" class="btn btn-danger" (click)="deleteModal.hide();">
+					تأكيد الحذف
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div bsModal #updateModal="bs-modal" class="modal fade" tabindex="-1" role="dialog">
+	<div class="modal-dialog modal-md">
+		<div class="modal-content">
+			<div class="modal-body">
+				<h5 class="mb-25">تعديل المستخدم</h5>
+				<form #form="ngForm" role="form" autocomplete="off" (ngSubmit)="update()">
+					<div class="row">
+						<div class="col-6">
+							<div class="form-group">
+								<label for="nickname">الاسم</label>
+								<textarea class="form-control" [(ngModel)]="addModel.nickname" id="nickname"
+									name="nickname" placeholder="الاسم"></textarea>
+								<span class="error-label">هذا الحقل مطلوب</span>
+							</div>
+						</div>
+						<div class="col-6">
+							<div class="form-group">
+								<label for="aboutMe">الوصف</label>
+								<textarea class="form-control" [(ngModel)]="addModel.aboutMe" id="aboutMe"
+									name="aboutMe" placeholder="الوصف"></textarea>
+								<span class="error-label">هذا الحقل مطلوب</span>
+							</div>
+						</div>
+
+						<div class="col-12 mt-30">
+							<button class="btn btn-primary" type="submit" [disabled]="form.invalid">
+								تعديل
+							</button>
+							<button class="btn btn-default mr-10" type="button" (click)="form.reset()">مسح
+								النموذج</button>
+
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>

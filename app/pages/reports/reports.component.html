@@ -1,0 +1,39 @@
+<div class="card">
+    <div class="card-body">
+        <form>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="type">نوع التقرير </label>
+                        <select-dropdown [items]="report_types" [(ngModel)]="report_type" #type="ngModel"
+                            controlId="type" name="type" (changed)="onSelectType($event)"
+                            placeholder="يرجى إختيار النوع">
+                        </select-dropdown>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="card">
+    <div class="card-body">
+        <table id="xlsTable" width="100%">
+            <thead>
+               <tr>
+                    <th>الاسم</th>
+                    <th>النوع </th>
+                    <th>المساحة</th>
+                    <th>السعر</th>
+               </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let item of data">
+                    <td>{{item.name}}</td>
+                    <td>{{item.type}}</td>
+                    <td>{{item.area}}</td>
+                    <td>{{item.price}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

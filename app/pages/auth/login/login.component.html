@@ -1,0 +1,77 @@
+<div class="full-body">
+	<div class="container">
+		<div class="card">
+			<div class="card-body" *ngIf=" registerFlag == false">
+				<h4 class="mb-15"><strong>تسجيل الدخول</strong></h4>
+				<form #form="ngForm" role="form" (ngSubmit)="login()">
+					<div class="row">
+
+						<div class="col-12">
+							<div class="form-group">
+								<label for="user_email"> البريد الالكتروني</label>
+								<input type="text" class="form-control" [(ngModel)]="email" id="user_email"
+									name="user_email" placeholder="البريد الالكتروني" required>
+							</div>
+						</div>
+						<div class="col-12">
+							<div class="form-group">
+								<label for="user_password">كلمة المرور</label>
+								<input type="password" class="form-control" [(ngModel)]="password" id="user_password"
+									name="user_password" placeholder="كلمة المرور" required>
+							</div>
+						</div>
+						<div class="col-12">
+							<a style="cursor:pointer" (click)=" registerFlag=true">انشاء حساب جديد </a>
+						</div>
+						<div class="col-12 mt-15">
+							<button type="submit" class="btn btn-primary btn-block h-45 mb-25">تسجيل الدخول</button>
+						</div>
+					</div>
+				</form>
+			</div>
+
+			<div class="card-body" *ngIf="!emailField && registerFlag">
+				<h4 class="mb-15"><strong> إنشاء حساب جديد</strong></h4>
+
+				<form #registerForm="ngForm" role="form" (ngSubmit)="signup()">
+					<div class="row">
+						<div class="col-12">
+							<div class="form-group">
+								<label for="user_name"> الاسم</label>
+								<input type="text" class="form-control" [(ngModel)]="username" id="user_name"
+									name="user_name" placeholder="الاسم" required>
+							</div>
+						</div>
+						<div class="col-12">
+							<div class="form-group">
+								<label for="u_email"> البريد الالكتروني</label>
+								<input type="text" class="form-control" [(ngModel)]="email" id="u_email" name="u_email"
+									placeholder="البريد الالكتروني" required>
+							</div>
+						</div>
+						<div class="col-12">
+							<div class="form-group">
+								<label for="u_password">كلمة المرور</label>
+								<input type="text" class="form-control" [(ngModel)]="password" id="u_password"
+									name="u_password" placeholder="كلمة المرور" required>
+							</div>
+						</div>
+
+						<div class="col-12">
+							<a style="cursor:pointer" (click)="emailField = false; registerFlag=false">تسجيل الدخول</a>
+						</div>
+
+						<div class="col-12 mt-15">
+							<button type="submit" class="btn btn-primary btn-block h-45 mb-25"> إنشاء</button>
+						</div>
+					</div>
+				</form>
+
+			</div>
+			<p class="mb--50 op-40" style="color:white" center>
+				© جميع الحقوق محفوظة, <a href="https://4deve.com/" target="_blank" style="color:white">المبرمجين
+					الأربعة</a>
+			</p>
+		</div>
+	</div>
+</div>
